@@ -411,7 +411,6 @@ class Mount(BaseRoute):
                 for key, value in matched_params.items():
                     matched_params[key] = self.param_convertors[key].convert(value)
                 remaining_path = "/" + matched_params.pop("path")
-                matched_path = route_path[: -len(remaining_path)]
                 path_params = dict(scope.get("path_params", {}))
                 path_params.update(matched_params)
                 child_scope = {
@@ -427,7 +426,7 @@ class Mount(BaseRoute):
                     # scope. All this is needed to support Request.url_for(), as it
                     # uses the app_root_path to build the URL path.
                     "app_root_path": scope.get("app_root_path", root_path),
-                    "root_path": root_path + matched_path,
+                    "root_path": scope["path"][: len(scope["path"]) - len(remaining_path)],
                     "endpoint": self.app,
                 }
                 return Match.FULL, child_scope

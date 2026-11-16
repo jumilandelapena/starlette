@@ -141,12 +141,18 @@ def get_route_path(scope: Scope) -> str:
         return path
 
     if not path.startswith(root_path):
+        if root_path.endswith("/") and path == root_path.rstrip("/"):
+            return ""
         return path
 
     if path == root_path:
-        return ""
+        return "/" if root_path.endswith("/") else ""
 
     if path[len(root_path)] == "/":
         return path[len(root_path) :]
+
+    if root_path.endswith("/"):
+        # root_path carries its own trailing slash ("/sub/" with path "/sub/who").
+        return path[len(root_path) - 1 :]
 
     return path
